@@ -1,0 +1,21 @@
+[package]
+name = "ani-trail"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "番迹 (AniTrail) 主程序"
+
+[[bin]]
+name = "ani-trail"
+path = "src/main.rs"
+
+[dependencies]
+ani-trail-core = { path = "../ani-trail-core" }
+anyhow.workspace = true
+slint.workspace = true
+tela-ui.workspace = true
+
+[build-dependencies]
+slint-build.workspace = true
+tela-ui.workspace = true

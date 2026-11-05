@@ -1,0 +1,35 @@
+[workspace]
+resolver = "2"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/DragonheartLX/AniTrail"
+
+[workspace.dependencies]
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json", "gzip"] }
+rustls = "=0.23.46"
+webpki-roots = "1.0"
+thiserror = "2"
+async-trait = "0.1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
+tela-ui = "0.1.1"
+slint = { version = "1.18.1", features = [
+    "accessibility",
+    "compat-1-18",
+    "backend-winit",
+    "renderer-femtovg",
+    "renderer-software",
+    "std",
+] }
+slint-build = "1.18.1"
+
+[profile.release]
+lto = "thin"
+strip = true

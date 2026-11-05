@@ -1,0 +1,14 @@
+import { TTheme, TThemeRole } from "@tela-ui/theme.slint";
+import { TButton } from "@tela-ui/base.slint";
+
+export component MainWindow inherits Window {
+    title: "番迹 AniTrail";
+    width: 480px;
+    height: 360px;
+    background: TTheme.bg-color-page;
+
+    TButton {
+        theme: TThemeRole.primary;
+        text: "Primary Button";
+    }
+}

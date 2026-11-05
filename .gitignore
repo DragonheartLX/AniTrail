@@ -1,0 +1,16 @@
+/target
+
+# Cargo
+Cargo.lock.orig
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docs
+docs/

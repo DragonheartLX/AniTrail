@@ -1,0 +1,20 @@
+[package]
+name = "ani-trail-player"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "番迹 (AniTrail) 播放器接口层：统一 Slint 侧画面接口，预留 Anime4K"
+
+[dependencies]
+thiserror.workspace = true
+tokio.workspace = true
+
+[dependencies.slint]
+workspace = true
+optional = true
+
+[features]
+default = ["slint"]
+# Slint 无视频解码；解码引擎在 D3 spike 定型后接入本 crate 的 impl。
+# Anime4K（mpv 风格 GLSL shader 修饰）同理随引擎落地，本 crate 先冻结接口。

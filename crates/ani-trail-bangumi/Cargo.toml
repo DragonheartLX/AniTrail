@@ -1,0 +1,17 @@
+[package]
+name = "ani-trail-bangumi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "番迹 (AniTrail) Bangumi 对接层：API 客户端、镜像降级、ECH TLS、限速"
+
+[dependencies]
+base64.workspace = true
+reqwest.workspace = true
+rustls.workspace = true
+webpki-roots.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true

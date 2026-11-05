@@ -1,0 +1,12 @@
+[package]
+name = "ani-trail-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "番迹 (AniTrail) 核心库"
+
+[dependencies]
+ani-trail-bangumi = { path = "../ani-trail-bangumi" }
+ani-trail-player = { path = "../ani-trail-player" }
+slint.workspace = true
