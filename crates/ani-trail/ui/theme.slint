@@ -1,0 +1,10 @@
+// AniTrail — AppTokens（docs/规划/06 §2 / 10 §3）
+// 值一律取设计源 tokens-resolved.json（AniTrail · Extension）；
+// M1-1 主题映射（docs/theme-map.md）落地前，本文件暂存未挂入 TTheme 的业务色。
+export global AppTokens {
+    // 已看态紫（state-watched #8E56DD）：开屏 glow B / 徽记用色
+    out property <color> state-watched: #8E56DD;
+    // TelaUI · Color 「brand-6」#054BBE：开屏 glow A 主辉光；
+    // M1-1 将随 TTheme.dark.primary 六档归位，归位后此处移除
+    out property <color> brand-6: #054BBE;
+}

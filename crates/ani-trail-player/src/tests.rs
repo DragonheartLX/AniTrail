@@ -20,7 +20,7 @@ impl FrameSink for CollectSink {
 }
 
 #[test]
-fn frame_入sink且记录() {
+fn frame_enters_sink_and_records() {
     let f = VideoFrame::new(2, 2, Some(Duration::from_millis(3)), vec![0; 16]).unwrap();
     let mut sink = CollectSink::default();
     sink.present(&f).unwrap();
@@ -29,7 +29,7 @@ fn frame_入sink且记录() {
 }
 
 #[test]
-fn policy_默认值() {
+fn policy_defaults() {
     assert_eq!(PlaybackState::Idle, crate::engine::PlaybackState::Idle);
     assert!(!UpscalePolicy::None.is_anime4k());
     assert!(UpscalePolicy::Anime4k(crate::upscale::Anime4kConfig::typical_order([])).is_anime4k());

@@ -94,6 +94,8 @@ impl BangumiClient {
                 body: body.chars().take(600).collect(),
             });
         }
-        resp.json().await.map_err(|e| Error::Transport(e.to_string()))
+        resp.json()
+            .await
+            .map_err(|e| Error::Transport(e.to_string()))
     }
 }

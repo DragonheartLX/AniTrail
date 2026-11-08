@@ -1,0 +1,15 @@
+[package]
+name = "ani-trail-platform"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "番迹 平台化差异统一接口：存储布局与令牌存储契约"
+
+[dependencies]
+anyhow.workspace = true
+dirs.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+tempfile = "3.27.0"

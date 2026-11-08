@@ -39,7 +39,8 @@ impl StaticProvider {
     }
 
     fn pull(&self, ref_id: &str) -> Result<Vec<EpisodeSource>> {
-        self.locked_cat(ref_id).ok_or_else(|| Error::InvalidRef(ref_id.to_owned()))
+        self.locked_cat(ref_id)
+            .ok_or_else(|| Error::InvalidRef(ref_id.to_owned()))
     }
 
     fn locked_cat(&self, ref_id: &str) -> Option<Vec<EpisodeSource>> {

@@ -10,8 +10,8 @@ use std::time::Duration;
 
 use crate::error::Result;
 use crate::frame::VideoFrame;
-use crate::upscale::UpscalePolicy;
 use crate::source::Source;
+use crate::upscale::UpscalePolicy;
 
 /// 播放状态机（引擎内部管理，事件驱动 UI）。
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -32,7 +32,10 @@ pub enum PlaybackState {
 #[derive(Clone, Debug)]
 pub enum PlaybackEvent {
     /// 周期进度（引擎自行保证节奏，建议 ≥4Hz）。
-    Progress { position: Duration, total: Duration },
+    Progress {
+        position: Duration,
+        total: Duration,
+    },
     StateChanged(PlaybackState),
     /// 缓冲进度 0.0..=1.0（仅 Stalled 期间有意义）。
     Buffer(f32),

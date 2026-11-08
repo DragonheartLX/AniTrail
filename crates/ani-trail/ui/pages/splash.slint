@@ -1,0 +1,138 @@
+// AniTrail — 02 · 开屏 Splash（docs/规划/05 · M5；D30：设计稿为参考，效果以 Slint 为准）
+//
+// 画布型页：绝对定位 + 断点双档（width < 768 → Mobile 390×844 基准，否则 Desktop 1440×900 基准，docs/规划/06 §3）。
+// 版面（自下而上锚定，与设计稿 02 页逐段对位）：
+//   底部 E · 版本信息 → 上方 D · 加载状态（间距 24/40）→ 上方 C · 品牌主视觉（间距 206/60）→ 背景 A · 双辉光。
+// progress 由同步通道接通后由 Rust 驱动（M4）；接通前取设计稿缺省 0.4。
+import { TTheme } from "@tela-ui/theme.slint";
+import { TText } from "@tela-ui/base.slint";
+import { AppTokens } from "../theme.slint";
+
+export component SplashPage inherits Rectangle {
+    background: TTheme.bg-color-page;
+    clip: true;
+
+    in property <float> progress: 0.4;
+    in property <string> loading-text: "正在同步 Bangumi 数据…";
+    in property <string> slogan-text: "记录每一部动画的轨迹";
+    in property <string> version-text: "v0.1.0 · TDesign / tela-ui";
+
+    property <bool> compact: root.width < 768px;
+    // E · 底部信息块高（设计稿 02：Mobile 64 / Desktop 60）与底部留白（0/40）
+    property <length> footer-height: compact ? 64px : 60px;
+    property <length> bottom-pad: compact ? 0px : 40px;
+    // D · 加载状态块高（50/60）及其与 Footer 的间距（24/40）
+    property <length> loading-height: compact ? 50px : 60px;
+    property <length> loading-gap: compact ? 24px : 40px;
+    // C · 品牌主视觉块高（220/400）及其与 Loading 的间距（206/60）
+    property <length> brand-height: compact ? 220px : 400px;
+    property <length> brand-gap: compact ? 206px : 60px;
+
+    // 底部锚点链
+    property <length> footer-y: root.height - self.bottom-pad - self.footer-height;
+    property <length> loading-y: root.footer-y - self.loading-gap - self.loading-height;
+    property <length> brand-y: root.loading-y - self.brand-gap - self.brand-height;
+
+    // 背景 A · glow A（品牌蓝；设计中心 ≈ 页面横 49%、品牌区中心）
+    Rectangle {
+        x: root.width * 0.49 - self.width / 2;
+        y: root.height * 0.47 - self.height / 2;
+        width: root.compact ? 520px : 640px;
+        height: self.width;
+        border-radius: self.width / 2;
+        background: @radial-gradient(circle, AppTokens.brand-6 0%, transparent 85%);
+    }
+    // 背景 B · glow B（已看紫；设计中心 ≈ 横 63%、纵 59%，压暗 40%）
+    Rectangle {
+        x: root.width * 0.63 - self.width / 2;
+        y: root.height * 0.59 - self.height / 2;
+        width: root.compact ? 300px : 360px;
+        height: self.width;
+        border-radius: self.width / 2;
+        opacity: 0.4;
+        background: @radial-gradient(circle, AppTokens.state-watched 0%, transparent 85%);
+    }
+
+    // C · 品牌主视觉：App logo（96×96）+ wordmark + slogan
+    Image {
+        source: @image-url("../assets/app-icon.svg");
+        x: (root.width - self.width) / 2;
+        y: root.brand-y + (root.compact ? 10px : 40px);
+        width: 96px;
+        height: 96px;
+    }
+    TText {
+        // wordmark（设计稿 38/64 Bold · 行高 50/84）
+        text: "AniTrail";
+        x: 0;
+        y: root.brand-y + (root.compact ? 130px : 170px);
+        width: root.width;
+        height: root.compact ? 50px : 84px;
+        font-size: root.compact ? 38px : 64px;
+        line-height: self.height;
+        font-weight: 700; // 品牌字重：设计稿 wordmark 为 Bold，无字重令牌
+        color: TTheme.text-color-primary;
+        horizontal-alignment: center;
+    }
+    TText {
+        // slogan（设计稿 14/18 与 16/21）
+        text: root.slogan-text;
+        x: 0;
+        y: root.brand-y + (root.compact ? 186px : 258px);
+        width: root.width;
+        height: root.compact ? 18px : 21px;
+        font-size: root.compact ? 14px : 16px;
+        line-height: self.height;
+        color: TTheme.text-color-secondary;
+        horizontal-alignment: center;
+    }
+
+    // D · 加载状态：轨 240×3（progress-bar 宽度令牌）+ 文案 11/15
+    Rectangle {
+        x: (root.width - self.width) / 2;
+        y: root.loading-y + (root.compact ? 10px : 16px);
+        width: 240px;
+        height: 3px;
+        background: TTheme.border-level-2-color;
+        Rectangle {
+            x: 0;
+            y: 0;
+            width: parent.width * Math.max(0, Math.min(1, root.progress));
+            height: parent.height;
+            background: TTheme.brand-color;
+        }
+    }
+    TText {
+        text: root.loading-text;
+        x: 0;
+        y: root.loading-y + (root.compact ? 28px : 34px);
+        width: root.width;
+        height: 15px;
+        font-size: 11px;
+        line-height: 15px;
+        color: TTheme.text-color-placeholder;
+        horizontal-alignment: center;
+    }
+
+    // E · 底部信息：版本 11/15；home indicator 仅移动档
+    TText {
+        text: root.version-text;
+        x: 0;
+        y: root.footer-y + 10px;
+        width: root.width;
+        height: 15px;
+        font-size: 11px;
+        line-height: 15px;
+        color: TTheme.text-color-disabled;
+        horizontal-alignment: center;
+    }
+    if root.compact: Rectangle {
+        x: (root.width - self.width) / 2;
+        y: root.footer-y + 50px;
+        width: 134px;
+        height: 4px;
+        border-radius: self.height / 2;
+        background: TTheme.text-color-primary;
+        opacity: 0.4;
+    }
+}

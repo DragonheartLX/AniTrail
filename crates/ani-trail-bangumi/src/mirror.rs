@@ -31,7 +31,11 @@ impl Mirror {
 
     /// 拼接 API 路径。
     pub fn url(&self, path: &str) -> String {
-        format!("{}/{}", self.api_base.trim_end_matches('/'), path.trim_start_matches('/'))
+        format!(
+            "{}/{}",
+            self.api_base.trim_end_matches('/'),
+            path.trim_start_matches('/')
+        )
     }
 }
 
@@ -53,7 +57,9 @@ struct Handle {
 impl MirrorRouter {
     pub fn new(user_agent: &str, mirrors: Vec<Mirror>) -> Result<Self> {
         if mirrors.is_empty() {
-            return Err(Error::Config("镜像列表为空，无法构建 Bangumi 客户端".into()));
+            return Err(Error::Config(
+                "镜像列表为空，无法构建 Bangumi 客户端".into(),
+            ));
         }
         let mut handles = Vec::with_capacity(mirrors.len());
         for m in mirrors {
@@ -96,7 +102,11 @@ impl MirrorRouter {
             let idx = (self.preferred + offset) % n;
             let handle = &self.handles[idx];
             let label = handle.mirror.label.clone();
-            if self.cooldown_until.get(&label).is_some_and(|t| *t > Instant::now()) {
+            if self
+                .cooldown_until
+                .get(&label)
+                .is_some_and(|t| *t > Instant::now())
+            {
                 continue;
             }
             match make(&handle.mirror, &handle.http).send().await {

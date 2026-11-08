@@ -4,7 +4,7 @@ use ani_trail_player::frame::{FrameSink, VideoFrame};
 use std::time::Duration;
 
 #[test]
-fn 帧转slint_image尺寸一致() {
+fn frame_to_slint_image_size() {
     let f = VideoFrame::new(4, 3, Some(Duration::from_millis(5)), vec![0u8; 4 * 3 * 4]).unwrap();
     let img = crate::media::frame_to_slint_image(&f);
     let s = img.size();
@@ -12,7 +12,7 @@ fn 帧转slint_image尺寸一致() {
 }
 
 #[test]
-fn sink_无帧为空_投帧后peek() {
+fn sink_empty_then_peek_after_push() {
     let sink = crate::media::SlintFrameSink::new();
     assert!(sink.peek().is_none());
     let f = VideoFrame::new(2, 2, None, vec![1u8; 16]).unwrap();

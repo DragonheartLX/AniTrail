@@ -17,12 +17,7 @@ pub struct VideoFrame {
 
 impl VideoFrame {
     /// 构建并校验长度 == width*height*4。
-    pub fn new(
-        width: u32,
-        height: u32,
-        pts: Option<Duration>,
-        rgba: Vec<u8>,
-    ) -> Result<Self> {
+    pub fn new(width: u32, height: u32, pts: Option<Duration>, rgba: Vec<u8>) -> Result<Self> {
         let need = (width as u64)
             .checked_mul(height as u64)
             .and_then(|px| px.checked_mul(4))
@@ -87,7 +82,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn frame_长度校验() {
+    fn frame_length_checks() {
         assert!(VideoFrame::new(2, 2, None, vec![0; 16]).is_ok());
         assert!(matches!(
             VideoFrame::new(2, 2, None, vec![0; 15]),
@@ -97,13 +92,14 @@ mod tests {
     }
 
     #[test]
-    fn frame_尺寸重塑分享pts() {
+    fn frame_resize_shares_pts() {
         let f = VideoFrame::new(2, 2, Some(Duration::from_millis(7)), vec![7; 16]).unwrap();
         let pts = f.pts();
-        let g = f
-            .resized(4, 4, vec![9; 64], pts)
-            .expect("放大后形状合法");
-        assert_eq!((g.width(), g.height(), g.pts()), (4, 4, Some(Duration::from_millis(7))));
+        let g = f.resized(4, 4, vec![9; 64], pts).expect("放大后形状合法");
+        assert_eq!(
+            (g.width(), g.height(), g.pts()),
+            (4, 4, Some(Duration::from_millis(7)))
+        );
         assert_eq!(g.rgba().len(), 64);
     }
 }

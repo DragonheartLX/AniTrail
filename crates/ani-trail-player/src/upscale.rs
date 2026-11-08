@@ -59,11 +59,9 @@ impl Anime4kConfig {
 pub fn validate(policy: &UpscalePolicy) -> Result<()> {
     match policy {
         UpscalePolicy::None => Ok(()),
-        UpscalePolicy::Anime4k(cfg) if cfg.shader_files.is_empty() => {
-            Err(crate::error::Error::Engine(
-                "Anime4k 策略必须有至少一个 shader 文件".into(),
-            ))
-        }
+        UpscalePolicy::Anime4k(cfg) if cfg.shader_files.is_empty() => Err(
+            crate::error::Error::Engine("Anime4k 策略必须有至少一个 shader 文件".into()),
+        ),
         UpscalePolicy::Anime4k(_) => Ok(()),
     }
 }

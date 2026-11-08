@@ -77,7 +77,7 @@ impl Playlist {
     }
 
     /// 前进一集；已在最后一集则停留并返回 None。
-    pub fn next(&mut self) -> Option<&Source> {
+    pub fn advance(&mut self) -> Option<&Source> {
         let c = self.cursor?;
         if c + 1 < self.items.len() {
             self.cursor = Some(c + 1);
@@ -111,23 +111,23 @@ mod tests {
     use super::*;
 
     #[test]
-    fn playlist_游标走动与边界() {
+    fn playlist_cursor_walk_bounds() {
         let mut pl = Playlist::from_sources([
             Source::local("a"),
             Source::local("b"),
             Source::remote("https://x"),
         ]);
         assert_eq!(pl.current().map(|s| s.uri.as_str()), Some("a"));
-        assert_eq!(pl.next().map(|s| s.uri.as_str()), Some("b"));
-        assert_eq!(pl.next().map(|s| s.uri.as_str()), Some("https://x"));
-        assert_eq!(pl.next().map(|s| s.uri.as_str()), None, "末尾停留");
+        assert_eq!(pl.advance().map(|s| s.uri.as_str()), Some("b"));
+        assert_eq!(pl.advance().map(|s| s.uri.as_str()), Some("https://x"));
+        assert_eq!(pl.advance().map(|s| s.uri.as_str()), None, "末尾停留");
         assert_eq!(pl.prev().map(|s| s.uri.as_str()), Some("b"));
-        assert_eq!(pl.set_cursor(9).is_none(), true);
+        assert!(pl.set_cursor(9).is_none());
         assert_eq!(pl.current().map(|s| s.uri.as_str()), Some("b"));
     }
 
     #[test]
-    fn playlist_空队列追加后从0开始() {
+    fn playlist_empty_then_start_zero() {
         let mut pl = Playlist::new();
         assert!(pl.is_empty());
         assert_eq!(pl.current(), None);

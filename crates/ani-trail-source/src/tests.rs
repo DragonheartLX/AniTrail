@@ -10,13 +10,21 @@ use crate::{EpisodeSource, SelectorDialect, SourceProvider};
 type Providers = Vec<Arc<dyn SourceProvider>>;
 
 #[tokio::test]
-async fn static_provider_搜索与选集走通() {
+async fn static_provider_search_and_pick() {
     let p = StaticProvider::new("本地演示", SelectorDialect::Xpath);
     p.put(
         "某番",
         vec![
-            EpisodeSource { index: 1, title: Some("EP1".into()), uri: "https://cdn/1.m3u8".into(), },
-            EpisodeSource { index: 2, title: None, uri: "https://cdn/2.m3u8".into() },
+            EpisodeSource {
+                index: 1,
+                title: Some("EP1".into()),
+                uri: "https://cdn/1.m3u8".into(),
+            },
+            EpisodeSource {
+                index: 2,
+                title: None,
+                uri: "https://cdn/2.m3u8".into(),
+            },
         ],
     );
     let providers: Providers = vec![Arc::new(p)];
@@ -37,7 +45,7 @@ async fn static_provider_搜索与选集走通() {
 }
 
 #[test]
-fn dialect_miss_转标准错误() {
+fn dialect_miss_maps_to_error() {
     let err = dialect_miss("demo", SelectorDialect::Css, &[SelectorDialect::Xpath]);
     assert!(matches!(err, Error::Upstream { .. }), "{err}");
 }
