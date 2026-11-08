@@ -1,0 +1,33 @@
+// AniTrail — 路由（docs/规划/01 §3 / 05 M2-1）
+//
+// Route 枚举是唯一来源，Rust 侧经 slint-build 生成同名枚举持有页面栈；
+// `Router.current` 由 Rust 写入，UI 只读；页面分发（懒挂载 if）在 app 壳内。
+// ESC 优先级（M2-5）：壳层 FocusScope 先看 TPopupStack.open-count，>0 时把 ESC
+// 交给 tela 层自己关弹层，否则 Rust 走 back()。
+export enum Route {
+    splash,
+    home,
+    discover,
+    progress,
+    collection,
+    profile,
+    cache,
+    settings,
+}
+
+export global Router {
+    /// 当前页面（懒挂载分发）；由 Rust 持栈写入。
+    in-out property <Route> current: Route.splash;
+    /// 栈深（Rust 写入）：>1 时页面骨架显示返回钮。
+    in-out property <int> depth: 1;
+    /// 回填：即将进入页面（push/back）时 Rust 设置该页保存的滚动偏移。
+    in-out property <length> restored-scroll: 0px;
+    /// 页面滚动上报（scaffold 在 viewport-y 变化时调用，值为正值 offset）。
+    callback save-scroll(length);
+    /// 壳内下钻（push，M5 详情/剧集等页内导航用）。
+    callback go(Route);
+    /// 主导航节切换（不压栈：清栈到根再落位，无返回钮语境）。
+    callback switch(Route);
+    /// 返回；栈底（splash）忽略。
+    callback back();
+}

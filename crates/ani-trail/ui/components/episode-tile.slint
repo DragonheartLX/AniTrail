@@ -1,0 +1,80 @@
+// AniTrail — 剧集 tile（M3-2）：三态（想看/在看/看过）+ 序号 + 点击推进。
+// 状态色取 AppTokens（想看 粉 #E851B3 / 在看 青 #4EC9E8 / 已看 紫 #8E56DD）。
+// 点击推进 forward：waiting→wish→doing→watched→waiting；`changed` 通知宿主批量 PATCH。
+import { TTheme } from "@tela-ui/theme.slint";
+import { TText } from "@tela-ui/base.slint";
+import { AppTokens } from "../theme.slint";
+
+export enum EpisodeState { waiting, wish, doing, watched }
+
+export component EpisodeTile inherits Rectangle {
+    in property <int> episode: 1;                // 序号
+    in-out property <EpisodeState> state: EpisodeState.waiting;
+
+    callback changed(EpisodeState);
+    // 点击即推进（含等待态）；宿主可拦截自行决定批量 PATCH 时机。
+    callback toggled();
+
+    in property <length> box-size: 44px;
+
+    width: self.box-size;
+    height: self.box-size;
+    preferred-width: self.box-size;
+    preferred-height: self.box-size;
+
+    private property <color> state-color:
+        state == EpisodeState.watched ? AppTokens.state-watched
+        : state == EpisodeState.doing ? AppTokens.accent-cyan
+        : state == EpisodeState.wish ? AppTokens.state-want
+        : TTheme.border-level-2-color;
+    private property <string> state-label:
+        state == EpisodeState.watched ? "看过"
+        : state == EpisodeState.doing ? "在看"
+        : state == EpisodeState.wish ? "想看" : "";
+
+    border-radius: TTheme.radius-small;
+    background:
+        state == EpisodeState.watched ? TTheme.bg-color-component-disabled
+        : TTheme.bg-color-secondarycontainer;
+    border-width: 1px;
+    border-color: TTheme.border-level-2-color;
+
+    // 状态角标（左上，3px 处三角/圆点）：
+    Rectangle {
+        x: TTheme.spacing-1;
+        y: TTheme.spacing-1;
+        width: 6px;
+        height: 6px;
+        border-radius: self.width / 2;
+        background: root.state-color;
+        visible: root.state != EpisodeState.waiting;
+    }
+
+    TText {
+        width: 100%;
+        y: (parent.height - TTheme.line-height-m) / 2;
+        horizontal-alignment: center;
+        text: root.episode + "";
+        font-size: TTheme.font-size-s;
+        line-height: TTheme.line-height-m;
+        color:
+            state == EpisodeState.watched ? TTheme.text-color-disabled
+            : state == EpisodeState.doing ? AppTokens.accent-cyan
+            : state == EpisodeState.wish ? AppTokens.state-want
+            : TTheme.text-color-secondary;
+    }
+
+    TouchArea {
+        accessible-role: AccessibleRole.button;
+        accessible-label: "第 " + root.episode + " 集 · " + root.state-label;
+        mouse-cursor: MouseCursor.pointer;
+        clicked => {
+            if (root.state == EpisodeState.waiting) { root.state = EpisodeState.wish; }
+            else if (root.state == EpisodeState.wish) { root.state = EpisodeState.doing; }
+            else if (root.state == EpisodeState.doing) { root.state = EpisodeState.watched; }
+            else { root.state = EpisodeState.waiting; }
+            root.changed(root.state);
+            root.toggled();
+        }
+    }
+}

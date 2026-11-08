@@ -1,0 +1,64 @@
+// AniTrail — 桌面顶栏（M2-3；设计稿 03 TopBar/Desktop：breadcrumb + 头像 + 1px 底描边）
+//
+// 不用 tela TNavBar（品牌+菜单下划线形态，与设计不符；D39 记录差分）。
+// 面包屑承接当前路由展示名（M2-5 后续页头路径可深化为多级）。
+import { TBreadcrumb, TCrumbItem } from "@tela-ui/navigation.slint";
+import { TTheme } from "@tela-ui/theme.slint";
+import { TText } from "@tela-ui/base.slint";
+import { Router, Route } from "../router.slint";
+import { AppTokens } from "../theme.slint";
+import { Probe } from "../dev/probe/probe.slint";
+
+export component TopBar inherits Rectangle {
+    height: 64px;
+    background: TTheme.bg-color-page;
+
+    // 1px 底描边（设计 4627）。
+    Rectangle {
+        y: parent.height - 1px;
+        width: parent.width;
+        height: 1px;
+        background: TTheme.border-level-1-color;
+    }
+
+    HorizontalLayout {
+        padding-left: TTheme.spacing-5;
+        padding-right: TTheme.margin-xl;
+        spacing: TTheme.margin-l;
+
+        TBreadcrumb {
+            vertical-stretch: 0;
+            items: [{ label: root.page-name, value: root.page-name }];
+        }
+
+        Rectangle { horizontal-stretch: 1; }
+
+        // 头像占位（36px，M4 登录态接真实头像；底色 = sidebar-active-bg）。
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            vertical-stretch: 0;
+            border-radius: self.width / 2;
+            background: AppTokens.sidebar-active-bg;
+            TText {
+                text: "访";
+                vertical-alignment: center;
+                horizontal-alignment: center;
+                color: TTheme.text-color-anti;
+                font-size: TTheme.font-size-m;
+                line-height: TTheme.line-height-m;
+            }
+        }
+    }
+
+    private property <string> page-name:
+        Router.current == Route.settings && Probe.on ? "详情（探针）" :
+        Router.current == Route.settings ? "设置" :
+        Router.current == Route.home ? "主页"
+        : Router.current == Route.discover ? "发现"
+        : Router.current == Route.progress ? "进度"
+        : Router.current == Route.collection ? "收藏"
+        : Router.current == Route.profile ? "我的"
+        : Router.current == Route.cache ? "缓存"
+        : "设置";
+}

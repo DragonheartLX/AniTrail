@@ -1,0 +1,135 @@
+// AniTrail — 应用壳（M2-3：断点 768 双壳；移动 TTabBar 底部 / 桌面 TSideNav 224+TopBar）
+// D30：SideBar 设计宽 224（AppTokens.sidebar-desktop-width），tela TSideNav 232/64
+// 折叠宽为组件内定值不开放，按 D30 像素不追。
+// ESC 优先级（M2-5）：TPopupStack 有层时 ESC 归层自身（tela 焦点拦截），否则走退栈。
+import { TTabBar, TTabBarItem, TSideNav, TSideNavItem, TSideNavFooterItem, TSideNavMode } from "@tela-ui/navigation.slint";
+import { TTheme } from "@tela-ui/theme.slint";
+import { TIconSet } from "@tela-ui/base.slint";
+import { TPopupStack } from "@tela-ui/popup-stack.slint";
+import { AppTokens } from "../theme.slint";
+import { Router, Route } from "../router.slint";
+import { AppIcons } from "../app_icons.slint";
+import { TopBar } from "top-bar.slint";
+import { PageScaffold } from "page-scaffold.slint";
+import { HomePage } from "../pages/home.slint";
+import { DiscoverPage } from "../pages/discover.slint";
+import { ProgressPage } from "../pages/progress.slint";
+import { CollectionPage } from "../pages/collection.slint";
+import { ProfilePage } from "../pages/profile.slint";
+import { CachePage } from "../pages/cache.slint";
+import { SettingsPage } from "../pages/settings.slint";
+import { ProbeDetailPage } from "../dev/probe/probe-detail.slint";
+import { Probe } from "../dev/probe/probe.slint";
+
+export component Shell inherits Rectangle {
+    background: TTheme.bg-color-page;
+    clip: true;
+
+    in property <bool> compact: self.width < 768px;
+
+    callback escaped();
+
+    escaped => {
+        if (TPopupStack.open-count > 0) {
+            TPopupStack.press-escape();
+        } else {
+            Router.back();
+        }
+    }
+
+    // 键盘根：无弹层抢焦点时，Escape → 退栈（M2-5）。
+    scope := FocusScope {
+        width: 100%;
+        height: 100%;
+        key-pressed(e) => {
+            if (e.text == Key.Escape) { root.escaped(); return accept; }
+            return reject;
+        }
+        init => { scope.focus(); }
+
+        VerticalLayout {
+            HorizontalLayout {
+                if !root.compact: VerticalLayout {
+                    TSideNav {
+                        title: "番迹 AniTrail";
+                        logo: AppIcons.logo;
+                        items: [
+                            { label: "主页", value: "home", icon: TIconSet.House },
+                            { label: "发现", value: "discover", icon: AppIcons.discover },
+                            { label: "进度", value: "progress", icon: TIconSet.Calendar },
+                            { label: "收藏", value: "collection", icon: TIconSet.Heart },
+                            { label: "我的", value: "profile", icon: TIconSet.User },
+                        ];
+                        footer-items: [
+                            { label: "缓存", value: "cache", icon: TIconSet.Download },
+                            { label: "设置", value: "settings", icon: TIconSet.Settings },
+                        ];
+                        current-value: router-value();
+                        changed(val) => { Router.switch(route-of(val)); }
+                        function router-value() -> string {
+                            Router.current == Route.home ? "home"
+                            : Router.current == Route.discover ? "discover"
+                            : Router.current == Route.progress ? "progress"
+                            : Router.current == Route.collection ? "collection"
+                            : Router.current == Route.profile ? "profile"
+                            : Router.current == Route.cache ? "cache"
+                            : "settings";
+                        }
+                        function route-of(val: string) -> Route {
+                            val == "home" ? Route.home
+                            : val == "discover" ? Route.discover
+                            : val == "progress" ? Route.progress
+                            : val == "collection" ? Route.collection
+                            : val == "profile" ? Route.profile
+                            : val == "cache" ? Route.cache
+                            : Route.settings;
+                        }
+                    }
+                }
+                VerticalLayout {
+                    if !root.compact: TopBar { }
+                    // 桌面也有页头（骨架页头）；移动页头在骨架内部。
+                    Rectangle {
+                        vertical-stretch: 1;
+
+                        if Router.current == Route.home: HomePage { }
+                        if Router.current == Route.discover: DiscoverPage { }
+                        if Router.current == Route.progress: ProgressPage { }
+                        if Router.current == Route.collection: CollectionPage { }
+                        if Router.current == Route.profile: ProfilePage { }
+                        if Router.current == Route.cache: CachePage { }
+                        if Router.current == Route.settings && Probe.on && Router.depth > 1: ProbeDetailPage { }
+                        if Router.current == Route.settings && !(Probe.on && Router.depth > 1): SettingsPage { }
+                    }
+                }
+            }
+            if root.compact: TTabBar {
+                width: 100%;
+                items: [
+                    { text: "主页", icon: TIconSet.House },
+                    { text: "发现", icon: AppIcons.discover },
+                    { text: "进度", icon: TIconSet.Calendar },
+                    { text: "收藏", icon: TIconSet.Heart },
+                    { text: "我的", icon: TIconSet.User },
+                ];
+                current: tab-index();
+                changed(i) => { Router.switch(route-of-index(i)); }
+                function tab-index() -> int {
+                    Router.current == Route.discover ? 1
+                    : Router.current == Route.progress ? 2
+                    : Router.current == Route.collection ? 3
+                    : Router.current == Route.profile ? 4
+                    : 0;
+                }
+                function route-of-index(i: int) -> Route {
+                    i == 1 ? Route.discover
+                    : i == 2 ? Route.progress
+                    : i == 3 ? Route.collection
+                    : i == 4 ? Route.profile
+                    : Route.home;
+                }
+            }
+        }
+    }
+}
+

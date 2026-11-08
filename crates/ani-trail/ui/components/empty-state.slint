@@ -1,0 +1,64 @@
+// AniTrail — 空态（M3-5）：封 tela `TEmpty`；文案键 = docs/规划/09 §1（五类，
+// TODO「六类」为笔误与 06 规范一致收敛）；主按钮回调透传（M5 绑定跳转/重试等）。
+import { TButton } from "@tela-ui/base.slint";
+import { TEmpty } from "@tela-ui/display.slint";
+import { TThemeRole } from "@tela-ui/theme.slint";
+import { TIconData } from "@tela-ui/base.slint";
+
+export enum EmptyClass {
+    noRecords,           // 空纪录 → 去追番
+    noCollection,        // 空收藏 → 去搜索
+    searchNoResult,      // 搜索无结果 → 清空筛选
+    offline,             // 断网 → 重试
+    noMobileSource,      // 无片源 → 查看规则
+}
+
+export component EmptyState inherits Rectangle {
+    in property <EmptyClass> class: EmptyClass.noRecords;
+    in property <TIconData> icon: { paths: [] };   // 空即类默认 Inbox
+
+    // 文案（键=09§1；D17 以 ui_i18n 常量镜像；M5 起由 Rust 覆盖为 tr()）
+    in property <string> desc-no-records: "纪录从今天开始";
+    in property <string> desc-no-collection: "还没有收藏";
+    in property <string> desc-search-no-result: "没有找到相关条目";
+    in property <string> desc-offline: "网络不可用";
+    in property <string> desc-no-mobile-source: "没有可用的片源";
+
+    in property <string> action-no-records: "去追番";
+    in property <string> action-no-collection: "去搜索";
+    in property <string> action-search-no-result: "清空筛选";
+    in property <string> action-offline: "重试";
+    in property <string> action-no-mobile-source: "查看规则";
+
+    callback action-triggered(EmptyClass);
+
+    background: transparent;
+
+    TEmpty {
+        icon: root.icon;
+        description: root.description-text();
+
+        TButton {
+            text: root.action-text();
+            theme: TThemeRole.primary;
+            clicked => { root.action-triggered(root.class); }
+        }
+    }
+
+    function description-text() -> string {
+        return root.class == EmptyClass.noRecords ? root.desc-no-records
+            : root.class == EmptyClass.noCollection ? root.desc-no-collection
+            : root.class == EmptyClass.searchNoResult ? root.desc-search-no-result
+            : root.class == EmptyClass.offline ? root.desc-offline
+            : root.class == EmptyClass.noMobileSource ? root.desc-no-mobile-source
+            : "";
+    }
+
+    function action-text() -> string {
+        return root.class == EmptyClass.noRecords ? root.action-no-records
+            : root.class == EmptyClass.noCollection ? root.action-no-collection
+            : root.class == EmptyClass.searchNoResult ? root.action-search-no-result
+            : root.class == EmptyClass.offline ? root.action-offline
+            : root.action-no-mobile-source;
+    }
+}

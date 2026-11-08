@@ -1,0 +1,23 @@
+//! AniTrail 应用图标（TIconSet 46 字形覆盖外的补位，tela data-only 扩展约定）。
+//!
+//! 仅承载 `TIconData` 数据，不走外部 icon set（docs/规划/06 §4：图标走 TIcon）；
+//! 路径遵循 Lucide 24×24 / round caps 语法（TIcon 渲染器共享，ISC 致谢随画板内容）。
+
+import { TIconData } from "@tela-ui/base.slint";
+
+export global AppIcons {
+    /// 应用标记（窗口标题栏/侧栏头部）：轨迹弧（缺口朝左上）+ 播放三角（对齐 app-icon.svg 白标 24 网格）。
+    out property <TIconData> logo: {
+        paths: [
+            { command: "M 12 3.5 C 17.194 3.5 20.5 6.806 20.5 12 C 20.5 17.194 17.194 20.5 12 20.5 C 6.806 20.5 3.5 17.194 3.5 12", has_fill: false },
+            { command: "M 9.5 8 L 18 12 L 9.5 16 Z", has_fill: true },
+        ],
+    };
+    /// 发现（compass）：TIconSet 46 字形不含，按 tela「extend TIconSet」约定补位。
+    out property <TIconData> discover: {
+        paths: [
+            { command: "M 22 12 C 22 17.523 17.523 22 12 22 C 6.477 22 2 17.523 2 12 C 2 6.477 6.477 2 12 2 C 17.523 2 22 6.477 22 12", has_fill: false },
+            { command: "M 16.24 7.76 L 14.12 14.12 L 7.76 16.24 L 9.88 9.88 L 16.24 7.76", has_fill: false },
+        ],
+    };
+}

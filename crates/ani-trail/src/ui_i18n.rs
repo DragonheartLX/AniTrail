@@ -4,8 +4,13 @@
 pub mod splash {
     /// splash.slogan
     pub const SLOGAN: &str = "记录每一部动画的轨迹";
-    /// splash.loading-bangumi
+    /// splash.loading-bangumi（M4 同步管线起用；先落库防漂）
+    #[allow(dead_code)]
     pub const LOADING_BANGUMI: &str = "正在同步 Bangumi 数据…";
+    /// splash.loading-config
+    pub const LOADING_CONFIG: &str = "加载应用配置…";
+    /// splash.loading-client
+    pub const LOADING_CLIENT: &str = "正在启动 Bangumi 客户端…";
     /// splash.version — 实际取应用版本号，telemetry 注记 TDesign / tela-ui 基座
     pub const VERSION_LABEL: &str = "TDesign / tela-ui";
 }

@@ -1,0 +1,18 @@
+import { PageScaffold } from "../shell/page-scaffold.slint";
+import { TButton } from "@tela-ui/base.slint";
+import { TThemeRole } from "@tela-ui/theme.slint";
+import { Router, Route } from "../router.slint";
+import { Probe } from "../dev/probe/probe.slint";
+
+// M5 批次填充实际内容；M2 阶段为骨架占位。
+export component HomePage inherits Rectangle {
+    background: transparent;
+    PageScaffold { title: "主页";
+        // M2-2 验收钩子：下钻（go→push），返回/滚动回填走真数据（Probe.on 控制显隐，M5 删）。
+        drill-btn := TButton {
+            text: "下钻（探针）";
+            theme: TThemeRole.primary;
+            clicked => { Router.go(Route.settings); }
+        }
+    }
+}

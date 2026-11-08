@@ -1,0 +1,31 @@
+// AniTrail — 进度条（M3-4 纯展示）：轨道 = border-level-2 / 值条 = brand。
+// 用 token `AppTokens.progress-bar` 高度（3px）；Flickable 等容器外置。
+import { TTheme } from "@tela-ui/theme.slint";
+import { AppTokens } from "../theme.slint";
+
+export component ProgressMini inherits Rectangle {
+    in property <float> progress: 0.0;           // 0..1
+    in property <length> bar-width: 120px;
+    in property <color> track-color: TTheme.border-level-2-color;
+    in property <color> value-color: TTheme.brand-color;
+    in property <length> bar-height: AppTokens.progress-bar;
+
+    preferred-width: bar-width;
+    preferred-height: bar-height;
+
+    Rectangle {
+        y: (parent.height - self.height) / 2;
+        x: 0;
+        width: root.bar-width;
+        height: root.bar-height;
+        background: root.track-color;
+
+        Rectangle {
+            x: 0;
+            y: 0;
+            width: Math.min(1.0, Math.max(0.0, root.progress)) * parent.width;
+            height: parent.height;
+            background: root.value-color;
+        }
+    }
+}

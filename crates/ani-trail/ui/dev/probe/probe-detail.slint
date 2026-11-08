@@ -1,0 +1,15 @@
+// M2 验收探针页（下钻 push、返回钮、滚动回填全验；M5 起删除）。
+//（位置：ui/dev/probe/，与 gallery 同为 dev 实施）
+import { PageScaffold } from "../../shell/page-scaffold.slint";
+import { TText } from "@tela-ui/base.slint";
+
+export component ProbeDetailPage inherits Rectangle {
+    background: transparent;
+
+    PageScaffold { title: "详情（探针）";
+        for i in 24: Rectangle {
+            height: 44px;
+            TText { text: "row " + i; font-size: 16px; }
+        }
+    }
+}

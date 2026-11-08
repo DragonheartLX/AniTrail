@@ -1,16 +1,23 @@
 import { SplashPage } from "pages/splash.slint";
+import { Shell } from "shell/shell.slint";
+import { AppThemeBoot } from "theme.slint";
+import { AppIcons } from "app_icons.slint";
+import { Probe } from "dev/probe/probe.slint";
 import { Palette } from "std-widgets.slint";
 import { TBorderlessWindow } from "@tela-ui/base.slint";
+import { TPopupStack } from "@tela-ui/popup-stack.slint";
+import { Router, Route } from "router.slint";
 
-// 入口窗口：开屏页常驻（页面栈/壳由 M2 路由接管，docs/规划/01 §3）。
-// M0-1：只有 dark（设计撤光色）→ 启动强制 Dark；1440×900 默认（docs/AniTrail-Slint实现TODO §0）。
-// 无边框：TBorderlessWindow 自绘标题栏（拖拽/min/max/close），Chrome 按设计稿 02 的窗口控件区。
+// 路由符号对外暴露（slint-build 公共 API 要求：从主文件 re-export）。
+export { Router, Route } from "router.slint";
+
+// 入口窗口（docs/规划/01 §3）：AppThemeBoot 主题装配 → Splash 常驻（点按跳过）→ Shell 双壳。
+// M2-5 ESC 优先级：弹层开启时由 tela 层焦点拦截自行关闭，否则进退栈。
 // 缺省值 = 设计稿 02 页呈现值（与 ui_i18n 同口径）；运行时由 main.rs 以 ui_i18n 覆盖。
-// splash-progress 0.4 为设计稿缺省，M4 同步通道接通后由 Rust 实值替换。
 export component MainWindow inherits TBorderlessWindow {
     title: "番迹 AniTrail";
     icon: @image-url("assets/app-icon.svg");
-    // M0-1 按 tela gallery 口径微调：preferred 1440×900（初始档、可随用户缩放）+ min 390×844（Slint实现TODO §0 标定）
+    logo: AppIcons.logo;
     preferred-width: 1440px;
     preferred-height: 900px;
     min-width: 390px;
@@ -18,19 +25,29 @@ export component MainWindow inherits TBorderlessWindow {
 
     init => {
         Palette.color-scheme = ColorScheme.dark;
+        Probe.on = root.show-probe;
     }
+    AppThemeBoot { }
 
-    in property <float> splash-progress: 0.4;
+    in property <float> splash-progress: 0.0; // 由 splash.rs 后台驱动真实阶段
     in property <string> splash-slogan-text: "记录每一部动画的轨迹";
     in property <string> splash-loading-text: "正在同步 Bangumi 数据…";
     in property <string> splash-version-text: "v0.1.0 · TDesign / tela-ui";
 
-    SplashPage {
+    // M2 验收探针开关（M5 起移除；真值经 Probe.on 贯通）。
+    in property <bool> show-probe: true;
+
+    // MVP 阶段无弹层宿主（M5 起抽屉/对话框经 TPopupStackLayer 挂载，届时 ESC 由层焦点拦截）。
+    if Router.current == Route.splash: SplashPage {
         width: 100%;
         height: 100%;
         progress: root.splash-progress;
         slogan-text: root.splash-slogan-text;
         loading-text: root.splash-loading-text;
         version-text: root.splash-version-text;
+    }
+    if Router.current != Route.splash: Shell {
+        width: 100%;
+        height: 100%;
     }
 }

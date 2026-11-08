@@ -1,0 +1,69 @@
+// AniTrail — 组件 gallery（M3-6；dev 预览，主体构建不编入）
+// 用法：`slint-viewer --screenshot out.png -L tela-ui=<crate-ui> ui/dev/gallery.slint`
+import { TTheme, TThemeRole } from "@tela-ui/theme.slint";
+import { AppTokens } from "../theme.slint";
+import { TText } from "@tela-ui/base.slint";
+import { Poster, PosterSize } from "../components/poster.slint";
+import { EpisodeTile, EpisodeState } from "../components/episode-tile.slint";
+import { Heatmap } from "../components/heatmap.slint";
+import { StatInline } from "../components/stat-inline.slint";
+import { ProgressMini } from "../components/progress-mini.slint";
+import { SectionHeader } from "../components/section-header.slint";
+import { EmptyState, EmptyClass } from "../components/empty-state.slint";
+
+export component Gallery inherits Rectangle {
+    width: 1200px;
+    height: 1400px;
+    background: TTheme.bg-color-page;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 16px;
+
+        SectionHeader { title: "Poster 四档尺寸"; action-text: ""; }
+        HorizontalLayout {
+            spacing: 12px;
+            Rectangle {}
+            Poster { size: PosterSize.mini; state-tag: "在看"; state-tag-color: AppTokens.accent-cyan; }
+            Poster { size: PosterSize.small; state-tag: "想看"; state-tag-color: AppTokens.state-want; }
+            Poster { size: PosterSize.medium; }
+            Poster { size: PosterSize.large; title: "索手法记 · 追番足迹"; }
+        }
+
+        SectionHeader { title: "剧集 tile 三态"; action-text: ""; }
+        HorizontalLayout {
+            spacing: 8px;
+            EpisodeTile { episode: 7; state: EpisodeState.waiting; }
+            EpisodeTile { episode: 8; state: EpisodeState.wish; }
+            EpisodeTile { episode: 9; state: EpisodeState.doing; }
+            EpisodeTile { episode: 10; state: EpisodeState.watched; }
+        }
+
+        SectionHeader { title: "Heatmap 20×7（移动/桌面）"; action-text: ""; }
+        VerticalLayout {
+            spacing: 8px;
+            TText { text: "手机档（22px / gap5）"; font-size: 11px; color: TTheme.text-color-placeholder; }
+            Heatmap { wide: false; levels: [0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0]; }
+            TText { text: "桌面档（56px / gap8）"; font-size: 11px; color: TTheme.text-color-placeholder; }
+            Heatmap { wide: true;  levels: [0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0,0,1,2,3,4,0,1,0,4,4,3,2,1,0,0,2,3,4,0,0]; }
+        }
+
+        SectionHeader { title: "StatInline 与 ProgressMini"; action-text: ""; }
+        HorizontalLayout {
+            spacing: 32px; alignment: start;
+            StatInline { value: "127"; label: "看过集数"; }
+            StatInline { value: "4.2"; label: "综合评分"; unit: "分"; }
+            VerticalLayout { alignment: center; ProgressMini { progress: 0.42; bar-width: 240px; } }
+        }
+
+        SectionHeader { title: "EmptyState 五类"; action-text: ""; }
+        HorizontalLayout {
+            spacing: 16px;
+            Rectangle { background: TTheme.bg-color-container; border-radius: TTheme.radius-medium; EmptyState { class: EmptyClass.noRecords; } }
+            Rectangle { background: TTheme.bg-color-container; border-radius: TTheme.radius-medium; EmptyState { class: EmptyClass.noCollection; } }
+            Rectangle { background: TTheme.bg-color-container; border-radius: TTheme.radius-medium; EmptyState { class: EmptyClass.searchNoResult; } }
+            Rectangle { background: TTheme.bg-color-container; border-radius: TTheme.radius-medium; EmptyState { class: EmptyClass.offline; } }
+            Rectangle { background: TTheme.bg-color-container; border-radius: TTheme.radius-medium; EmptyState { class: EmptyClass.noMobileSource; } }
+        }
+    }
+}

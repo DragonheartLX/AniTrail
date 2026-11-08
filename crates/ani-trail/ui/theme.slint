@@ -1,10 +1,139 @@
-// AniTrail — AppTokens（docs/规划/06 §2 / 10 §3）
-// 值一律取设计源 tokens-resolved.json（AniTrail · Extension）；
-// M1-1 主题映射（docs/theme-map.md）落地前，本文件暂存未挂入 TTheme 的业务色。
+// AniTrail — 主题装配（docs/theme-map.md 执行件；值源 tokens-resolved.json / 规划 10 §3）
+import { TTheme } from "@tela-ui/theme.slint";
+import { TPrimaryColor } from "@tela-ui/structs/theme.slint";
+
+export { AppThemeBoot }
+
+// M1-2 · 品牌与功能色整组覆盖（docs/theme-map.md §1 四族 68 子段，D30 值级一致）：
+// 只动 dark preset 的四个 TPrimaryColor；ramp 与 tela TDesign 同值，语义捷径按设计源定值。
+// 全局不能挂 init：交给一次性装配组件进 MainWindow（M1-2）。
+component AppThemeBoot inherits Rectangle {
+    width: 0px;
+    height: 0px;
+
+    init => {
+        TTheme.dark.primary = {
+            color-1: #1b2f51, color-2: #173463, color-3: #143975, color-4: #103d88,
+            color-5: #0d429a, color-6: #054bbe, color-7: #2667d4, color-8: #4582e6,
+            color-9: #699ef5, color-10: #96bbf8,
+            color: #4582e6, hover: #699ef5, focus: #1b2f51, active: #699ef5,
+            disabled: #1b2f51, light: #1b2f51, light-hover: #1c2a44,
+        };
+        TTheme.dark.success = {
+            color-1: #193a2a, color-2: #1a4230, color-3: #17533d, color-4: #0d7a55,
+            color-5: #059465, color-6: #43af8a, color-7: #46bf96, color-8: #80d2b6,
+            color-9: #b4e1d3, color-10: #deede8,
+            color: #2ba471, hover: #0d7a55, focus: #1a4230, active: #43af8a,
+            disabled: #17533d, light: #193a2a, light-hover: #1a4230,
+        };
+        TTheme.dark.warning = {
+            color-1: #4f2a1d, color-2: #582f21, color-3: #733c23, color-4: #a75d2b,
+            color-5: #cf6e2d, color-6: #dc7633, color-7: #e8935c, color-8: #ecbf91,
+            color-9: #eed7bf, color-10: #f3e9dc,
+            color: #f5ba18, hover: #a75d2b, focus: #582f21, active: #dc7633,
+            disabled: #733c23, light: #4f2a1d, light-hover: #582f21,
+        };
+        TTheme.dark.error = {
+            color-1: #472324, color-2: #5e2a2d, color-3: #703439, color-4: #83383e,
+            color-5: #a03f46, color-6: #c64751, color-7: #de6670, color-8: #ec888e,
+            color-9: #edb1b6, color-10: #eeced0,
+            color: #e34d59, hover: #a03f46, focus: #5e2a2d, active: #de6670,
+            disabled: #703439, light: #472324, light-hover: #5e2a2d,
+        };
+
+        // M1-3 · 面层/文字/描边/遮罩/阴影/圆角（docs/theme-map.md §1，设计值级抄写——
+        // tela TDarkColors 的 #181818/#242424 系大改，本组全部按设计源）。
+        TTheme.dark.bg-page = #15181d;
+        TTheme.dark.bg-container = #20232b;
+        TTheme.dark.bg-container-hover = #272b34;
+        TTheme.dark.bg-container-active = #323843;
+        TTheme.dark.bg-secondarycontainer = #272b34;
+        TTheme.dark.bg-secondarycontainer-hover = #2e353f;
+        TTheme.dark.bg-secondarycontainer-active = #424a57;
+        TTheme.dark.bg-component = #262b34;
+        TTheme.dark.bg-component-hover = #323843;
+        TTheme.dark.bg-component-active = #424a57;
+        TTheme.dark.bg-secondarycomponent = #323843;
+        TTheme.dark.bg-secondarycomponent-hover = #424a57;
+        TTheme.dark.bg-secondarycomponent-active = #4a5160;
+        TTheme.dark.bg-component-disabled = #20232b;
+        TTheme.dark.bg-specialcomponent = transparent;
+        TTheme.dark.text-primary = #e7e8eb;
+        TTheme.dark.text-secondary = #a2a6b1;
+        TTheme.dark.text-placeholder = #6f7686;
+        TTheme.dark.text-disabled = #424a57;
+        TTheme.dark.text-anti = #ffffff;
+        TTheme.dark.text-brand = #4582e6;
+        TTheme.dark.text-link = #4582e6;
+        TTheme.dark.text-watermark = #ffffff1a;
+        TTheme.dark.border-level-1 = #262b34;
+        TTheme.dark.border-level-2 = #323843;
+        TTheme.dark.mask-active = #0a0d12b8;
+        TTheme.dark.mask-disabled = #0a0d1266;
+        TTheme.dark.shadow-1-color = #0000004d;
+        TTheme.dark.shadow-1-blur = 10px;
+        TTheme.dark.shadow-1-offset-y = 2px;
+        TTheme.dark.shadow-2-color = #00000066;
+        TTheme.dark.shadow-2-blur = 14px;
+        TTheme.dark.shadow-2-offset-y = 3px;
+        TTheme.dark.shadow-3-color = #00000080;
+        TTheme.dark.shadow-3-blur = 24px;
+        TTheme.dark.shadow-3-offset-y = 8px;
+        TTheme.dark.radius-small = 2px;
+        TTheme.dark.radius-default = 3px;
+        TTheme.dark.radius-medium = 6px;
+        TTheme.dark.radius-large = 9px;
+        TTheme.dark.radius-extra-large = 12px;
+        TTheme.dark.radius-round = 999px;
+    }
+}
+
+// M1-4 · 业务扩展令牌（`AniTrail · Extension` 33 条全量；docs/theme-map.md §3，
+// 值源 tokens-resolved.json；热力/状态色与布局量分列，命名去 `ref/` 前缀为 `ref-`）。
 export global AppTokens {
-    // 已看态紫（state-watched #8E56DD）：开屏 glow B / 徽记用色
-    out property <color> state-watched: #8E56DD;
-    // TelaUI · Color 「brand-6」#054BBE：开屏 glow A 主辉光；
-    // M1-1 将随 TTheme.dark.primary 六档归位，归位后此处移除
-    out property <color> brand-6: #054BBE;
+    // —— 颜色（15）——
+    // 热力看板 L0..L4（递进蓝）
+    out property <color> heat-0: #22262e;
+    out property <color> heat-1: #1b2f51;
+    out property <color> heat-2: #2a4c8f;
+    out property <color> heat-3: #4582e6;
+    out property <color> heat-4: #699ef5;
+    // 状态双色（想看粉 / 已看紫）与主线高亮青
+    out property <color> state-want: #e851b3;
+    out property <color> state-watched: #8e56dd;
+    out property <color> accent-cyan: #4ec9e8;
+    // 星标金 / 侧栏激活底
+    out property <color> star-rating: #f5ba18;
+    out property <color> sidebar-active-bg: #1b2f51;
+    // 遮罩（带 alpha，B8 ≈ 0.72）
+    out property <color> mask-scrim: #0a0d12b8;
+    // 参考面
+    out property <color> ref-bg-elevated: #272b34;
+    out property <color> ref-player-bg: #05070a;
+    out property <color> ref-frame-stroke: #667089;
+    out property <color> ref-text-tertiary: #6f7686;
+
+    // —— 布局量（18，length px）——
+    // 命中区与导航
+    out property <length> control-mobile-primary: 44px;
+    out property <length> tab-mobile-height: 48px;
+    out property <length> focus-min: 44px;
+    out property <length> sidebar-desktop-width: 224px;
+    out property <length> command-palette-width: 640px;
+    // 行与海报
+    out property <length> row-mobile-min: 64px;
+    out property <length> row-mobile-max: 72px;
+    out property <length> poster-grid-w: 176px;
+    out property <length> poster-grid-h: 248px;
+    out property <length> poster-thumb-w: 88px;
+    out property <length> poster-thumb-h: 48px;
+    // 热力格距
+    out property <length> heat-cell-mobile: 22px;
+    out property <length> heat-cell-desktop: 56px;
+    out property <length> heat-gap-mobile: 5px;
+    out property <length> heat-gap-desktop: 8px;
+    // 细件
+    out property <length> divider-card: 1px;
+    out property <length> progress-bar: 3px;
+    out property <length> unread-dot: 6px;
 }

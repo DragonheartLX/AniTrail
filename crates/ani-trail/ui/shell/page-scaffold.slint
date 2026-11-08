@@ -1,0 +1,101 @@
+// AniTrail — 页面骨架（M2-4：页头/间距/Flickable+TScrollBar 封装；页面不直接用 std ScrollView）
+//
+// 结构（D30：设计稿为参考，desktop 页头以 breadcrumb 顶栏承担，骨架页头只在
+// 移动档出现；桌面旋转后的标题也保留——页面头部信息一致）：
+//   header（title + 可选返回）→ Flickable 内容区（右缘挂 TScrollBar）。
+// 滚动状态经 Router.save-scroll 上报、返回/前进时由 Rust 回填 restored-scroll。
+import { TTheme } from "@tela-ui/theme.slint";
+import { Router } from "../router.slint";
+import { TIcon, TIconSet, TText } from "@tela-ui/base.slint";
+import { TScrollBar } from "@tela-ui/display.slint";
+
+export component PageScaffold inherits Rectangle {
+    background: TTheme.bg-color-page;
+
+    in property <string> title;
+    /// 是否渲染返回箭头（页头可见时生效；由 Router.depth 决定）。
+    in property <bool> can-back: Router.depth > 1;
+
+    /// 当前滚动偏移（右移深度，正值向下）；测试/状态读取口。
+    out property <length> scroll-offset: -fl.content-y;
+
+    private property <int> saved-seq;
+
+    VerticalLayout {
+        // 页头
+        Rectangle {
+            height: 72px;
+            HorizontalLayout {
+                padding-left: TTheme.padding-lr-l;
+                padding-right: TTheme.padding-lr-l;
+                spacing: TTheme.spacing-3;
+                if root.can-back: Rectangle {
+                    width: 40px;
+                    border-radius: self.width / 2;
+                    background: back-ta.has-hover ? TTheme.bg-color-component-hover : transparent;
+
+                    // 垂直居中：外层 VerticalLayout 包一层。
+                    Rectangle {
+                        y: (parent.height - self.height) / 2;
+                        width: parent.width;
+                        height: 40px;
+
+                        back-ta := TouchArea {
+                            accessible-role: AccessibleRole.button;
+                            accessible-label: "返回上一页";
+                            clicked => { Router.back(); }
+                        }
+                        TIcon {
+                            x: (parent.width - self.width) / 2;
+                            y: (parent.height - self.height) / 2;
+                            icon: TIconSet.ChevronLeft;
+                            size: 20px;
+                            icon-color: TTheme.text-color-secondary;
+                        }
+                    }
+                }
+                TText {
+                    text: root.title;
+                    font-size: TTheme.font-size-headline-s;
+                    line-height: 32px;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                }
+            }
+        }
+
+        Rectangle {
+            vertical-stretch: 1;
+            private property <length> content-y <=> fl.content-y;
+
+            fl := Flickable {
+                width: 100%;
+                height: 100%;
+                changed content-y => { Router.save-scroll(-fl.content-y); }
+
+                VerticalLayout {
+                    padding-top: TTheme.spacing-4;
+                    padding-bottom: TTheme.spacing-5;
+                    padding-left: root.compact ? TTheme.padding-lr-l : 0px;
+                    padding-right: root.compact ? TTheme.padding-lr-l : 0px;
+                    spacing: TTheme.spacing-4;
+                    @children
+                }
+            }
+
+            TScrollBar {
+                x: parent.width - self.width;
+                y: 0;
+                height: parent.height;
+                thumb-inset: 0;
+                content-height: fl.content-height;
+                content-y <=> fl.content-y;
+            }
+        }
+    }
+
+    private property <bool> compact: self.width < 768px;
+    init => {
+        fl.content-y = -Router.restored-scroll;
+    }
+}

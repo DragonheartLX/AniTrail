@@ -1,0 +1,86 @@
+// AniTrail — 追番热力图（M3-3）：20×7=140 格；cell 22/56、gap 5/8；月轴 + 周（周一首）轴。
+// levels 长度 140，以「列×行」为主序（j*20*i），0=冷（heat-0），4=热（heat-4）。
+// 修正记录：D30 下 cell/gap 取 TelaUI·Metrics `AppTokens.heat-cell-*` 与 `AppTokens.heat-gap-*`。
+import { TTheme } from "@tela-ui/theme.slint";
+import { TText } from "@tela-ui/base.slint";
+import { AppTokens } from "../theme.slint";
+
+export component Heatmap inherits Rectangle {
+    in property <[int]> levels;
+    in property <[string]> month-labels;   // 上方列轴（20 项，可空字符串隐藏）
+    in property <[string]> day-labels: ["一", "二", "三", "四", "五", "六", "日"];
+    /// 桌面档（cell 56 / gap 8）；false→移动档（cell 22 / gap 5）。
+    in property <bool> wide: false;
+
+    private property <length> cell: self.wide == true ? AppTokens.heat-cell-desktop : AppTokens.heat-cell-mobile;
+    private property <length> gap: self.wide == true ? AppTokens.heat-gap-desktop : AppTokens.heat-gap-mobile;
+
+    function level-color(level: int) -> color {
+        return level == 0 ? AppTokens.heat-0
+            : level == 1 ? AppTokens.heat-1
+            : level == 2 ? AppTokens.heat-2
+            : level == 3 ? AppTokens.heat-3
+            : AppTokens.heat-4;
+    }
+
+    // day/month label 尺寸（本地虚量，供 x/y 对位）
+    private property <length> day-labels-wh: day-labels.length > 0 ? (cell + gap) : 0px;
+    private property <length> month-labels-wh: month-labels.length > 0 ? (TTheme.line-height-s + gap / 2) : 0px;
+
+    background: transparent;
+
+    VerticalLayout {
+        spacing: gap / 2;
+
+        // 月轴
+        Rectangle {
+            height: TTheme.line-height-s;
+            HorizontalLayout {
+                x: root.cell + gap;   // 留出行轴宽度
+                spacing: gap;
+                for m in month-labels: Rectangle {
+                    width: cell;
+                    height: 100%;
+                    TText {
+                        text: m;
+                        font-size: 10px;
+                        line-height: TTheme.line-height-s;
+                        color: TTheme.text-color-placeholder;
+                        horizontal-alignment: center;
+                        overflow: elide;
+                    }
+                }
+            }
+        }
+
+        // 行轴 + 格子
+        HorizontalLayout {
+            spacing: gap / 2;
+            VerticalLayout {
+                width: cell;
+                spacing: gap;
+                for d in day-labels: TText {
+                    height: cell;
+                    width: 100%;
+                    text: d;
+                    font-size: 10px;
+                    line-height: cell;
+                    color: TTheme.text-color-placeholder;
+                    horizontal-alignment: center;
+                }
+            }
+            Rectangle {
+                // 每格绝对坐标：col = idx/7（x 轴），row = idx%7（y 轴）
+                // 设计值 levels[idx]（col*7+row？以列×行为主序 j*7+i）
+                for level[idx] in levels: Rectangle {
+                    x: day-labels-wh + Math.floor(idx / 7) * (cell + gap);
+                    y: month-labels-wh + Math.mod(idx, 7) * (cell + gap);
+                    width: cell;
+                    height: cell;
+                    border-radius: TTheme.radius-small;
+                    background: root.level-color(levels[idx]);
+                }
+            }
+        }
+    }
+}

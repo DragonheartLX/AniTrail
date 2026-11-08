@@ -1,0 +1,34 @@
+// AniTrail — 统计内联（M3-4 纯展示）：数值 + 标签 + 单位（可选）。
+// 使用：`StatInline { value: "127"; label: "看过集数"; }`。
+import { TTheme } from "@tela-ui/theme.slint";
+import { TText } from "@tela-ui/base.slint";
+
+export component StatInline inherits Rectangle {
+    in property <string> value;
+    in property <string> label;
+    in property <string> unit: "";
+    in property <color> value-color: TTheme.text-color-primary;
+    in property <int> value-font-size: 0;      // 0 = 默认（headline-s 24px）
+
+    background: transparent;
+    preferred-height: TTheme.line-height-headline-s + TTheme.line-height-s + TTheme.spacing-1;
+
+    VerticalLayout {
+        spacing: 1px;
+        alignment: start;
+        TText {
+            text: root.value + (root.unit != "" ? root.unit : "");
+            font-size: root.value-font-size != 0 ? root.value-font-size * 1px : TTheme.font-size-headline-s;
+            line-height: TTheme.line-height-headline-s;
+            color: root.value-color;
+            font-weight: TTheme.font-weight-semibold;
+        }
+        TText {
+            text: root.label;
+            font-size: TTheme.font-size-s;
+            line-height: TTheme.line-height-s;
+            color: TTheme.text-color-secondary;
+        }
+    }
+
+}

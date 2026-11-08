@@ -17,6 +17,7 @@ export component SplashPage inherits Rectangle {
     in property <string> slogan-text: "记录每一部动画的轨迹";
     in property <string> version-text: "v0.1.0 · TDesign / tela-ui";
 
+
     property <bool> compact: root.width < 768px;
     // E · 底部信息块高（设计稿 02：Mobile 64 / Desktop 60）与底部留白（0/40）
     property <length> footer-height: compact ? 64px : 60px;
@@ -40,7 +41,7 @@ export component SplashPage inherits Rectangle {
         width: root.compact ? 520px : 640px;
         height: self.width;
         border-radius: self.width / 2;
-        background: @radial-gradient(circle, AppTokens.brand-6 0%, transparent 85%);
+        background: @radial-gradient(circle, TTheme.dark.primary.color-6 0%, transparent 85%);
     }
     // 背景 B · glow B（已看紫；设计中心 ≈ 横 63%、纵 59%，压暗 40%）
     Rectangle {

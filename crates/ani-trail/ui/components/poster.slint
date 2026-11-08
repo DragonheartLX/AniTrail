@@ -1,0 +1,124 @@
+// AniTrail — 海报（M3-1）：四档尺寸 + 骨架占位 + 状态角标 + hover 抬升。
+// 尺寸为设计源定值（docs/规划/10 §3 组件库 Poster 画板；令牌未收录此四组，缓于本文件）。
+// 异步图：`image` 解码完成后渲染；空/未解码走骨架占位（shimmer 动画）。
+// 始终透传 `@children` 以便上层覆盖（如缩略图标）。
+import { TTheme } from "@tela-ui/theme.slint";
+import { TText } from "@tela-ui/base.slint";
+
+export enum PosterSize {
+    mini,    // 88×120
+    small,   // 104×142
+    medium,  // 152×212
+    large,   // 160×220
+}
+
+export component Poster inherits Rectangle {
+    in property <PosterSize> size: PosterSize.mini;
+    in property <image> image;                 // 异步图；空→骨架
+    in property <string> title;                // 底部标题（可选）
+    in property <string> state-tag;            // 角标文案（想看/在看/看过；可选）
+    in property <color> state-tag-color: TTheme.brand-color;
+
+    in property <length> width-override;
+    in property <length> height-override;
+
+    // hover 抬升：外层 pointer 区域 + y 动画。
+    in property <bool> hoverable: true;
+
+    private property <bool> hovered: false;
+    private property <length> box-w:
+        width-override != 0px
+        ? width-override
+        : size == PosterSize.mini ? 88px
+        : size == PosterSize.small ? 104px
+        : size == PosterSize.medium ? 152px
+        : 160px;
+    private property <length> box-h:
+        height-override != 0px
+        ? height-override
+        : size == PosterSize.mini ? 120px
+        : size == PosterSize.small ? 142px
+        : size == PosterSize.medium ? 212px
+        : 220px;
+
+    preferred-width: box-w;
+    preferred-height: box-h;
+
+    Rectangle {
+        y: ta.has-hover && root.hoverable ? -4px : 0px;
+        animate y { duration: TTheme.duration-fast; }
+
+        width: root.box-w;
+        height: root.box-h;
+        border-radius: TTheme.radius-medium;
+        clip: true;
+        background: TTheme.bg-color-container;
+        // hover 抬升 + 投影（border-level-1 压角实现阴影）
+        border-width: 1px;
+        border-color: TTheme.border-level-1-color;
+        drop-shadow-blur: ta.has-hover && root.hoverable ? 12px : 0px;
+        drop-shadow-offset-y: ta.has-hover && root.hoverable ? 4px : 0px;
+        drop-shadow-color: #00000066;
+        animate drop-shadow-blur, drop-shadow-offset-y { duration: TTheme.duration-fast; }
+
+        // 内容（图片/骨架 + 角标 + 标题）
+        Image {
+            x: 0;
+            y: 0;
+            width: 100%;
+            height: 100%;
+            source: root.image;
+            visible: root.image.width > 0;
+        }
+        Rectangle {
+            width: 100%;
+            height: 100%;
+            background: TTheme.bg-color-component;
+            visible: root.image.width == 0;
+            // 骨架 shimmer：窄条左→右滑过
+            Rectangle {
+                y: 0;
+                x: parent.width * (1.0 - 2.0 * Math.abs(Math.mod(animation-tick() / 1ms, 1600.0) / 1600.0 - 0.5));
+                width: parent.width / 2;
+                height: parent.height;
+                opacity: 0.25;
+                background: @linear-gradient(90deg, transparent, TTheme.bg-color-component-hover, transparent);
+            }
+        }
+
+        if root.state-tag != "": Rectangle {
+            x: TTheme.spacing-3;
+            y: TTheme.spacing-3;
+width: root.state-tag != "" ? 64px : 0px;
+            height: TTheme.line-height-s + TTheme.spacing-1;
+            border-radius: self.height / 2;
+            background: root.state-tag-color;
+            opacity: 0.92;
+            TText {
+                text: root.state-tag;
+                font-size: 11px;
+                line-height: TTheme.line-height-s;
+                color: TTheme.text-color-anti;
+                horizontal-alignment: center;
+                width: 100%;
+            }
+        }
+
+        if root.title != "": TText {
+            x: 0;
+            y: parent.height - (22px + TTheme.spacing-2);
+            width: parent.width;
+            height: 22px;
+            text: root.title;
+            color: TTheme.text-color-anti;
+            horizontal-alignment: center;
+            overflow: elide;
+        }
+    }
+
+    ta := TouchArea {
+        width: root.box-w;
+        height: root.box-h;
+        mouse-cursor: MouseCursor.pointer;
+    }
+}

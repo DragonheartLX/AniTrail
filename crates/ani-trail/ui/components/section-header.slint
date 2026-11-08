@@ -1,0 +1,37 @@
+// AniTrail — 区段标题（M3-4 纯展示）：标题 + 可选"更多"链接行为。
+import { TTheme } from "@tela-ui/theme.slint";
+import { TText } from "@tela-ui/base.slint";
+
+export component SectionHeader inherits Rectangle {
+    in property <string> title;
+    in property <string> action-text: "更多";
+    callback action-clicked();
+
+    background: transparent;
+    preferred-height: TTheme.line-height-headline-s;
+
+    HorizontalLayout {
+        spacing: TTheme.spacing-3;
+        TText {
+            text: root.title;
+            font-size: TTheme.font-size-headline-s;
+            line-height: TTheme.line-height-headline-s;
+            font-weight: TTheme.font-weight-semibold;
+            color: TTheme.text-color-primary;
+            horizontal-stretch: 1;
+        }
+        if root.action-text != "": TouchArea {
+            width: 44px;
+            mouse-cursor: MouseCursor.pointer;
+            clicked => { root.action-clicked(); }
+            TText {
+                text: root.action-text;
+                font-size: TTheme.font-size-s;
+                line-height: TTheme.line-height-headline-s;
+                color: TTheme.text-color-secondary;
+                horizontal-alignment: right;
+                width: 100%;
+            }
+        }
+    }
+}
